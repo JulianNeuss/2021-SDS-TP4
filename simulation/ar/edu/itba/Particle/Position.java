@@ -1,4 +1,4 @@
-package ar.edu.itba;
+package ar.edu.itba.Particle;
 
 import java.util.Objects;
 

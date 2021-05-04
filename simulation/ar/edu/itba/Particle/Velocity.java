@@ -1,4 +1,4 @@
-package ar.edu.itba;
+package ar.edu.itba.Particle;
 
 public class Velocity {
     private double velocityX;
