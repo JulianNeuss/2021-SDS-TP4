@@ -14,7 +14,7 @@ public class Particle implements Comparable<Particle>{
         position = new Position(particle.position.getX(), particle.position.getY());
         velocity = new Velocity(particle.velocity.getVelocityX(), particle.velocity.getVelocityY());
     }
-    public Particle(int id, double mass, double radius, Position position, Velocity velocity) {
+    public Particle(int id, double mass, Position position, Velocity velocity) {
         this.id = id;
         this.mass = mass;
         this.position = position;
@@ -47,6 +47,10 @@ public class Particle implements Comparable<Particle>{
                 getPosition().getX() + ' ' + getPosition().getY() +
                 ' ' + velocity.getVelocityX() + ' ' + velocity.getVelocityY() +
                 ' ' + getMass() + '\n';
+    }
+
+    public ParticleState getState(){
+        return new ParticleState(getPosition(),getVelocity());
     }
 
     @Override
