@@ -53,6 +53,16 @@ public class Particle implements Comparable<Particle>{
         return new ParticleState(getPosition(),getVelocity());
     }
 
+    public Particle updateParticle(ParticleState state){
+        return new Particle(
+            this.id,
+            this.mass,
+            state.getPosition(),
+            state.getVelocity()
+        );
+    }
+
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
