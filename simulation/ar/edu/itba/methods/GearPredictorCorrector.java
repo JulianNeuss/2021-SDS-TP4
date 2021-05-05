@@ -1,58 +1,103 @@
 package ar.edu.itba.methods;
 
-public class GearPredictorCorrector {
+import ar.edu.itba.systems.Force;
+import ar.edu.itba.particle.Particle;
+import ar.edu.itba.particle.Position;
+import ar.edu.itba.particle.Velocity;
+import ar.edu.itba.systems.ForceCalculator;
 
-    private double deltaTime;
-    private double alfa0 = 3/16;
-    private double alfa1 = 251/360;
-    private double alfa2 = 1;
-    private double alfa3 = 11/18;
-    private double alfa4 = 1/6;
-    private double alfa5 = 1/60;
+import java.util.ArrayList;
+import java.util.List;
 
+public class GearPredictorCorrector implements TrajectoryAlgorithm{
 
-//  Builder
-    public GearPredictorCorrector(double deltaTime) {
-        this.deltaTime = deltaTime;
+    private static final double[] ALFA = {3.0/16, 251.0/360, 1, 11.0/18, 1.0/6, 1.0/60};
+    private static final int ORDER = 5;
+
+    public Particle nextStep(Particle particle, Particle previousParticle, ForceCalculator forceCalculator, double timeStep){
+//        timeStep /= 2;
+        List<double[]> coefficients = gearAlgorithmPolynomialCoefficients(particle, forceCalculator, timeStep);
+        double[] coefficientsX = coefficients.get(0);
+        double[] coefficientsY = coefficients.get(1);
+        double x = 0;
+        double y = 0;
+        double velocityX = 0;
+        double velocityY = 0;
+        for (int i = 0; i<=ORDER; i++){
+            x += coefficientsX[i] * Math.pow(timeStep, i) / factorial(i);
+            y += coefficientsY[i] * Math.pow(timeStep, i) / factorial(i);
+        }
+        for (int i = 0; i<ORDER; i++){
+            velocityX += coefficientsX[i + 1] * Math.pow(timeStep, i) / factorial(i);
+            velocityY += coefficientsY[i + 1] * Math.pow(timeStep, i) / factorial(i);
+        }
+
+        return new Particle(particle.getId(), particle.getMass(), new Position(x, y), new Velocity(velocityX, velocityY));
     }
 
-// Algorithm steps
-// Step 1
-    private double[] predicitonStep(double r, double r1, double r2, double r3, double r4, double r5){
-        double[] prediction = new double[6];
-        prediction[0] = r + r1*deltaTime + r2*Math.pow(deltaTime,2)/2 + r3*Math.pow(deltaTime,3)/(3*2) + r4*Math.pow(deltaTime,4)/(4*3*2) + r5*Math.pow(deltaTime,5)/(5*4*3*2);
-        prediction[1] = r1 + r2*deltaTime + r3*Math.pow(deltaTime,2)/2 + r4*Math.pow(deltaTime,3)/(3*2) + r5*Math.pow(deltaTime,4)/(4*3*2);
-        prediction[2] = r2 + r3*deltaTime + r4*Math.pow(deltaTime,2)/2 + r5*Math.pow(deltaTime,3)/(3*2);
-        prediction[3] = r3 + r4*deltaTime + r5*Math.pow(deltaTime,2)/2;
-        prediction[4] = r4 + r5*deltaTime;
-        prediction[5] = r5;
-        return prediction;
+    // Full algorithm
+    private List<double[]> gearAlgorithmPolynomialCoefficients(Particle particle, ForceCalculator forceCalculator, double timeStep){
+        List<Position> predictions = predictionStep(forceCalculator.getRDerivatives(ORDER, particle), timeStep);
+        Particle predictedParticle = new Particle(particle.getId(), particle.getMass(), predictions.get(0), new Velocity(predictions.get(1).getX(), predictions.get(1).getY()));
+        Force deltaR2Force = evaluationStep(predictions, predictedParticle, forceCalculator, timeStep);
+        return correctionStep(deltaR2Force, particle.getMass(), predictions, timeStep);
     }
-// Step 2
-    private double evaluationStep(double[] prediction){
-        double acceleration;
-        double accelerationDelta;
-        double r2Delta;
-        acceleration = (-100000)*prediction[0] - 100*prediction[1];
-        accelerationDelta = acceleration - prediction[2];
-        r2Delta = (accelerationDelta*deltaTime*deltaTime)/2;
-        return r2Delta;
+
+    // Algorithm steps
+    // Step 1
+    private List<Position> predictionStep(List<Position> positionDerivatives, double timeStep){
+        if (positionDerivatives.size() != ORDER + 1)
+            throw new IllegalArgumentException("Se deben incluir hasta la derivada " + ORDER + " de la posición");
+
+        List<Position> predictions = new ArrayList<>(ORDER + 1);
+        for (int predictionIndex = 0; predictionIndex <= ORDER; predictionIndex++){
+            double x = 0;
+            double y = 0;
+            for (int rIndex = predictionIndex; rIndex <= ORDER; rIndex++) {
+                int term = rIndex - predictionIndex;
+                x += positionDerivatives.get(rIndex).getX() * Math.pow(timeStep, term) / factorial(term);
+                y += positionDerivatives.get(rIndex).getY() * Math.pow(timeStep, term) / factorial(term);
+            }
+            predictions.add(new Position(x, y));
+        }
+        return predictions;
     }
-// Step 3
-    private double[] correctionStep(double r2Delta, double[] prediction){
-        double[] corrected = new double[6];
-        corrected[0] = prediction[0] + alfa0*r2Delta;
-        corrected[1] = prediction[1] + alfa1*r2Delta/deltaTime;
-        corrected[2] = prediction[2] + alfa2*r2Delta*(2/deltaTime);
-        corrected[3] = prediction[3] + alfa3*r2Delta*(3*2/deltaTime);
-        corrected[4] = prediction[4] + alfa4*r2Delta*(4*3*2/deltaTime);
-        corrected[5] = prediction[5] + alfa5*r2Delta*(5*4*3*2/deltaTime);
+
+
+    // Step 2
+    private Force evaluationStep(List<Position> predictions, Particle predictedParticle, ForceCalculator forceCalculator, double timeStep){
+        Force force = forceCalculator.getForce(predictedParticle);
+        double accelerationX = force.getX() / predictedParticle.getMass();
+        double accelerationY = force.getY() / predictedParticle.getMass();
+        double accelerationDeltaX = accelerationX - predictions.get(2).getX();
+        double accelerationDeltaY = accelerationY - predictions.get(2).getY();
+        double accelerationDeltaXCorrected = accelerationDeltaX * timeStep * timeStep / 2;
+        double accelerationDeltaYCorrected = accelerationDeltaY * timeStep * timeStep / 2;
+        return new Force(accelerationDeltaXCorrected * predictedParticle.getMass(), accelerationDeltaYCorrected * predictedParticle.getMass());
+    }
+
+    // Step 3
+    private List<double[]> correctionStep(Force deltaR2Force, double mass, List<Position> prediction, double timeStep){
+        double deltaR2X = deltaR2Force.getX() / mass;
+        double deltaR2Y = deltaR2Force.getY() / mass;
+
+        List<double[]> corrected = new ArrayList<>(2);
+        for (int i = 0; i<2; i++){
+            corrected.add(new double[ORDER + 1]);
+        }
+        for (int i = 0; i<=ORDER; i++){
+            corrected.get(0)[i] = prediction.get(i).getX() + ALFA[i] * deltaR2X*factorial(i)/Math.pow(timeStep, i);
+            corrected.get(1)[i] = prediction.get(i).getY() + ALFA[i] * deltaR2Y*factorial(i)/Math.pow(timeStep, i);
+        }
+
         return corrected;
     }
-// Full algorithm
-    public double[] gearAlgorithm(double r, double r1, double r2, double r3, double r4, double r5){
-        double[] prediction = predicitonStep(r, r1, r2, r3, r4, r5);
-        double r2Delta = evaluationStep(prediction);
-        return correctionStep(r2Delta, prediction);
+
+    private static long factorial(int n){
+        long result = 1;
+        for (int i = n; i>0; i--){
+            result *= i;
+        }
+        return result;
     }
 }

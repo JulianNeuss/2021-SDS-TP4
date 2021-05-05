@@ -1,90 +1,56 @@
 package ar.edu.itba.methods;
 
-import ar.edu.itba.Particle.*;
+import ar.edu.itba.systems.Force;
+import ar.edu.itba.particle.*;
+import ar.edu.itba.systems.ForceCalculator;
 
-import java.util.ArrayList;
-import java.util.List;
+public class Beeman implements TrajectoryAlgorithm{
+    public Particle nextStep(Particle particle, Particle previousParticle, ForceCalculator forceCalculator, double timeStep){
+        Force currentForce = forceCalculator.getForce(particle);
+        double currentAccelerationX = currentForce.getX()/particle.getMass();
+        double currentAccelerationY = currentForce.getY()/particle.getMass();
 
-public class Beeman {
-    public static List<ParticleState> getXandV(
-            double t0, double tf, double dt,
-            Particle p, double k, double gamma,
-            ForceCalculator f){
-
-        List<ParticleState> res = new ArrayList<>();
-        res.add(p.getState());
-        if(t0+dt >= tf){
-            return res;
+        if(previousParticle.getPosition() == null) {
+            previousParticle = getPreviousToInitialParticle(particle, forceCalculator, timeStep);
         }
-        //current particle
-        Particle cp = p;
+        Force previousForce = forceCalculator.getForce(previousParticle);
+        double previousAccelerationX = previousForce.getX()/particle.getMass();
+        double previousAccelerationY = previousForce.getY()/particle.getMass();
 
-        //get a
-        double a1 = f.getA(cp);
+        double x = particle.getPosition().getX() + particle.getVelocity().getVelocityX() * timeStep
+                + (2*currentAccelerationX/3 - previousAccelerationX/6) * timeStep * timeStep;
+        double y = particle.getPosition().getY() + particle.getVelocity().getVelocityY() * timeStep
+                + (2*currentAccelerationY/3 - previousAccelerationY/6) * timeStep * timeStep;
 
-        //TODO: check
-        //predict a-1 with euler
-        double a0 = f.getA(cp.updateParticle(new ParticleState(
-                    new Position(
-                        cp.getPosition().getX() - cp.getVelocity().getVelocityX() * dt,
-                            cp.getPosition().getY()
-                    ),
-                    new Velocity(
-                        cp.getVelocity().getVelocityX() - a1*dt,
-                            cp.getVelocity().getVelocityY()
-                    )
-                )));
+        double predictedVelocityX = particle.getVelocity().getVelocityX() + (3 * currentAccelerationX
+                - previousAccelerationX) * timeStep / 2;
 
+        double predictedVelocityY = particle.getVelocity().getVelocityY() + (3 * currentAccelerationY
+                - previousAccelerationY) * timeStep / 2;
 
-        for(int i = 1; i*dt + t0 <= tf; i++){
-            // calculate next x
-            double x = Beeman.nextX(
-                cp.getPosition().getX(),cp.getVelocity().getVelocityX(),
-                dt,a1,a0
-            );
+        Particle nextPredictedParticle = new Particle(particle.getId(), particle.getMass(), new Position(x, y),
+                new Velocity(predictedVelocityX, predictedVelocityY));
 
-            // calculate a+1 with prediction
-            double a2 = f.getA(cp.updateParticle(new ParticleState(
-                new Position(x,cp.getPosition().getY()),
-                new Velocity(
-                        Beeman.predictV(cp.getVelocity().getVelocityX(),dt,a1,a0),
-                        cp.getVelocity().getVelocityY()
-                )
-            )));
-            // calculate v with a+1
-            double v = Beeman.nextV(cp.getVelocity().getVelocityX(),dt,a2,a1,a0);
+        Force nextForce = forceCalculator.getForce(nextPredictedParticle);
+        double nextAccelerationX = nextForce.getX() / particle.getMass();
+        double nextAccelerationY = nextForce.getY() / particle.getMass();
 
-            // calculate a+1 with correct v
-            a2 = f.getA(cp.updateParticle(new ParticleState(
-                    new Position(x,cp.getPosition().getY()),
-                    new Velocity(v,p.getVelocity().getVelocityY())
-            )));
+        double correctVelocityX = particle.getVelocity().getVelocityX() +
+                (nextAccelerationX/3 + 5*currentAccelerationX/6 - previousAccelerationX/6) * timeStep;
+        double correctVelocityY = particle.getVelocity().getVelocityY() +
+                (nextAccelerationY/3 + 5*currentAccelerationY/6 - previousAccelerationY/6) * timeStep;
 
-            // create new state
-            ParticleState newState = new ParticleState(
-                    new Position(x,cp.getPosition().getY()),
-                    new Velocity(v,cp.getVelocity().getVelocityY())
-            );
-
-            //update particle
-            cp = cp.updateParticle(newState);
-            //save state
-            res.add(newState);
-            //update accelerations
-            a0 = a1;
-            a1 = a2;
-        }
-
-        return res;
+        return new Particle(particle.getId(), particle.getMass(), new Position(x, y), new Velocity(correctVelocityX, correctVelocityY));
     }
 
-    public static double nextX(double px,double pv,double dt,double pa,double ppa){
-        return px + pv * dt +( (2*pa)/3 - ppa/6 ) * Math.pow(dt,2);
-    }
-    public static double nextV(double pv,double dt,double a,double pa,double ppa){
-        return pv + (a/3 + (5*pa)/6 - ppa/6) * dt;
-    }
-    public static double predictV(double pv,double dt,double pa,double ppa){
-        return pv + (3 * pa * dt) / 2 - (ppa * dt) / 2;
+    private static Particle getPreviousToInitialParticle(Particle particle, ForceCalculator forceCalculator, double timeStep){
+        Force force = forceCalculator.getForce(particle);
+        double velocityX = particle.getVelocity().getVelocityX() - timeStep * force.getX() / particle.getMass();
+        double velocityY = particle.getVelocity().getVelocityY() - timeStep * force.getY() / particle.getMass();
+
+        double x = particle.getPosition().getX() - timeStep * velocityX - timeStep * timeStep * force.getX()/ (2 * particle.getMass());
+        double y = particle.getPosition().getY() - timeStep * velocityY - timeStep * timeStep * force.getY()/ (2 * particle.getMass());
+
+        return new Particle(particle.getId(), particle.getMass(), new Position(x, y), new Velocity(x, y));
     }
 }

@@ -1,12 +1,12 @@
-package ar.edu.itba.Particle;
+package ar.edu.itba.particle;
 
 import java.util.Objects;
 
 public class Particle implements Comparable<Particle>{
     private final int id;
     private final double mass;
-    private final Position position;
-    private final Velocity velocity;
+    private Position position;
+    private Velocity velocity;
 
     public Particle(Particle particle){
         id = particle.id;
@@ -37,6 +37,14 @@ public class Particle implements Comparable<Particle>{
         return velocity;
     }
 
+    public void setPosition(Position position) {
+        this.position = position;
+    }
+
+    public void setVelocity(Velocity velocity) {
+        this.velocity = velocity;
+    }
+
     public void setVelocity(double velocityX, double velocityY){
         velocity.setVelocityX(velocityX);
         velocity.setVelocityY(velocityY);
@@ -48,20 +56,6 @@ public class Particle implements Comparable<Particle>{
                 ' ' + velocity.getVelocityX() + ' ' + velocity.getVelocityY() +
                 ' ' + getMass() + '\n';
     }
-
-    public ParticleState getState(){
-        return new ParticleState(getPosition(),getVelocity());
-    }
-
-    public Particle updateParticle(ParticleState state){
-        return new Particle(
-            this.id,
-            this.mass,
-            state.getPosition(),
-            state.getVelocity()
-        );
-    }
-
 
     @Override
     public boolean equals(Object o) {
