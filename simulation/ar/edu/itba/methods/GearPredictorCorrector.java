@@ -15,7 +15,7 @@ public class GearPredictorCorrector implements TrajectoryAlgorithm{
     private static final int ORDER = 5;
 
     public Particle nextStep(Particle particle, Particle previousParticle, ForceCalculator forceCalculator, double timeStep){
-//        timeStep /= 2;
+        timeStep /= 2;
         List<double[]> coefficients = gearAlgorithmPolynomialCoefficients(particle, forceCalculator, timeStep);
         double[] coefficientsX = coefficients.get(0);
         double[] coefficientsY = coefficients.get(1);
