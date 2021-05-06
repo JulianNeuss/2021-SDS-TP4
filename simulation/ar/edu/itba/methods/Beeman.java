@@ -11,7 +11,7 @@ public class Beeman implements TrajectoryAlgorithm{
         double currentAccelerationY = currentForce.getY()/particle.getMass();
 
         if(previousParticle.getPosition() == null) {
-            previousParticle = getPreviousToInitialParticle(particle, forceCalculator, timeStep);
+            previousParticle = Euler.getPreviousToInitialParticle(particle, forceCalculator, timeStep);
         }
         Force previousForce = forceCalculator.getForce(previousParticle);
         double previousAccelerationX = previousForce.getX()/particle.getMass();
@@ -41,16 +41,5 @@ public class Beeman implements TrajectoryAlgorithm{
                 (nextAccelerationY/3 + 5*currentAccelerationY/6 - previousAccelerationY/6) * timeStep;
 
         return new Particle(particle.getId(), particle.getMass(), new Position(x, y), new Velocity(correctVelocityX, correctVelocityY));
-    }
-
-    private static Particle getPreviousToInitialParticle(Particle particle, ForceCalculator forceCalculator, double timeStep){
-        Force force = forceCalculator.getForce(particle);
-        double velocityX = particle.getVelocity().getVelocityX() - timeStep * force.getX() / particle.getMass();
-        double velocityY = particle.getVelocity().getVelocityY() - timeStep * force.getY() / particle.getMass();
-
-        double x = particle.getPosition().getX() - timeStep * velocityX - timeStep * timeStep * force.getX()/ (2 * particle.getMass());
-        double y = particle.getPosition().getY() - timeStep * velocityY - timeStep * timeStep * force.getY()/ (2 * particle.getMass());
-
-        return new Particle(particle.getId(), particle.getMass(), new Position(x, y), new Velocity(x, y));
     }
 }
