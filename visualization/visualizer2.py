@@ -4,6 +4,8 @@ from matplotlib.collections import PatchCollection
 
 D = pow(10,-8)
 L = 16
+SAVE_VIDEO = True
+SHOW_PLOT = True
 
 algorithm_used = 1
 
@@ -33,9 +35,12 @@ while line:
 def update_snap(i):
     global snap_scatter
     plt.title(f"Time:  {snaps[i].t} seg")
-    print(snaps[i])
     snap_scatter.set_offsets([[snaps[i].x,snaps[i].y]])
 
+
+def progress_callback(curr,total):
+    if curr % 10 == 0:
+        print(f"Saving frame {curr} of total {total}")
 
 
 stationary_x = []
@@ -62,5 +67,11 @@ ani = FuncAnimation(
     plt.gcf(),update_snap,
     frames=len(snaps)
 )
+
 plt.gcf().set_size_inches(12,12)
-plt.show()
+
+if SAVE_VIDEO == True:
+    ani.save("animation/visualizer2_anime.avi",progress_callback=progress_callback)
+    ani.save("animation/visualizer2_anime.gif",progress_callback=progress_callback)
+if SHOW_PLOT == True:
+    plt.show()
