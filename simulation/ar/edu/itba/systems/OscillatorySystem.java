@@ -52,4 +52,17 @@ public class OscillatorySystem implements System, ForceCalculator{
         }
         return rDerivatives;
     }
+
+    public static List<Particle> analyticalSolution(double maxTime, double timeStep) {
+        List<Particle> trajectory = new ArrayList<>();
+        Particle state = new Particle(MASS, INITIAL_POSITION, INITIAL_VELOCITY, 0);
+        trajectory.add(state);
+        for (double time = 0; time < maxTime; time += timeStep){
+            double x = Math.exp(-(GAMMA/(2*MASS))*time) * Math.cos(Math.sqrt(K/MASS- GAMMA * GAMMA / (4 * MASS * MASS)) * time);
+            Position position = new Position(x, 0);
+            state = new Particle(MASS, position, null, 0);
+            trajectory.add(state);
+        }
+        return trajectory;
+    }
 }

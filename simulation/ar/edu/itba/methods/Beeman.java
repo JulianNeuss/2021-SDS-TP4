@@ -42,4 +42,9 @@ public class Beeman implements TrajectoryAlgorithm{
 
         return new Particle(particle.getMass(), new Position(x, y), new Velocity(correctVelocityX, correctVelocityY), particle.getElectricCharge());
     }
+
+    @Override
+    public String toString() {
+        return "Beeman";
+    }
 }

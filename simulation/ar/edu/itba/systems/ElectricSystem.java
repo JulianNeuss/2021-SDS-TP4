@@ -16,8 +16,12 @@ public class ElectricSystem implements System, ForceCalculator{
     private static final double CHARGE = Math.pow(10, -19);
     private static final double MASS = Math.pow(10, -27);
     private static final double DISTANCE_BETWEEN_PARTICLES = Math.pow(10, -8);
-    private static final Position INITIAL_POSITION = new Position(0, (LENGTH-1)/2.0 * DISTANCE_BETWEEN_PARTICLES);
-    private static final Velocity INITIAL_VELOCITY = new Velocity(Math.pow(10, 4),0);
+    private static final double MIN_POSITION = (LENGTH-1)/2.0 * DISTANCE_BETWEEN_PARTICLES - DISTANCE_BETWEEN_PARTICLES;
+    private static final double MAX_POSITION = (LENGTH-1)/2.0 * DISTANCE_BETWEEN_PARTICLES + DISTANCE_BETWEEN_PARTICLES;
+    private static final Position INITIAL_POSITION = randomPositionBetween(MIN_POSITION, MAX_POSITION);
+    private static final double MIN_VELOCITY = Math.pow(10, 4);
+    private static final double MAX_VELOCITY = Math.pow(10,5);
+    private static final Velocity INITIAL_VELOCITY = randomVelocityBetween(MIN_VELOCITY, MAX_VELOCITY);
     private static final List<List<Particle>> particles = systemConfiguration();
 
     @Override
@@ -87,5 +91,15 @@ public class ElectricSystem implements System, ForceCalculator{
         double module = -K * particle1.getElectricCharge() * particle2.getElectricCharge() / (distance * distance);
         Force versor = particle1.getVersor(particle2);
         return Force.fromVersorAndModule(versor, module);
+    }
+
+    private static Position randomPositionBetween(double minPosition, double maxPosition) {
+        double y = Math.random() * (maxPosition - minPosition) + maxPosition;
+        return new Position(0, y);
+    }
+
+    private static Velocity randomVelocityBetween(double minVelocity, double maxVelocity) {
+        double x = Math.random() * (maxVelocity - minVelocity) + minVelocity;
+        return new Velocity(x, 0);
     }
 }

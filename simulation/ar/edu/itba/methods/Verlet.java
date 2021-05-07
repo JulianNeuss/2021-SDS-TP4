@@ -25,4 +25,9 @@ public class Verlet implements TrajectoryAlgorithm {
         Velocity nextVelocity = new Velocity(velocityX, velocityY);
         return new Particle(particle.getMass(), nextPosition, nextVelocity, particle.getElectricCharge());
     }
+
+    @Override
+    public String toString() {
+        return "Verlet";
+    }
 }

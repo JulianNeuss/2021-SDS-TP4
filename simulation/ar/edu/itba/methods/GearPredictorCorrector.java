@@ -100,4 +100,9 @@ public class GearPredictorCorrector implements TrajectoryAlgorithm{
         }
         return result;
     }
+
+    @Override
+    public String toString() {
+        return "GearPredictorCorrector";
+    }
 }
