@@ -1,6 +1,7 @@
 import matplotlib.pyplot as plt
 from matplotlib.animation import FuncAnimation
 from matplotlib.collections import PatchCollection
+import os
 
 D = pow(10,-8)
 L = 16
@@ -71,6 +72,11 @@ ani = FuncAnimation(
 plt.gcf().set_size_inches(12,12)
 
 if SAVE_VIDEO == True:
+    try:
+        os.makedirs('animation')
+    except OSError as e:
+        if e.errno != errno.EEXIST:
+            raise
     ani.save("animation/visualizer2_anime.avi",progress_callback=progress_callback)
     ani.save("animation/visualizer2_anime.gif",progress_callback=progress_callback)
 if SHOW_PLOT == True:
