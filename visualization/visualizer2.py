@@ -64,17 +64,18 @@ plt.ylim([-1 * D, L * D])
 stationary = plt.scatter(stationary_x,stationary_y,facecolors=stationary_colors,s=150)
 snap_scatter = plt.scatter(snaps[0].x,snaps[0].y,facecolor="red",s=150)
 
+plt.gcf().set_size_inches(12,12)
+
 ani = FuncAnimation(
     plt.gcf(),update_snap,
-    frames=len(snaps)
+    frames=len(snaps),
+    interval=20
 )
-
-plt.gcf().set_size_inches(12,12)
 
 if SAVE_VIDEO == True:
     if not os.path.exists('animation'):
         os.makedirs('animation')
-    ani.save("animation/visualizer2_anime.avi",progress_callback=progress_callback)
-    ani.save("animation/visualizer2_anime.gif",progress_callback=progress_callback)
+    ani.save("animation/video.avi",progress_callback=progress_callback)
+    # ani.save("animation/animation.gif",progress_callback=progress_callback)
 if SHOW_PLOT == True:
     plt.show()

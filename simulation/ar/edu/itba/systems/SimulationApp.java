@@ -15,9 +15,9 @@ import java.util.List;
 
 public class SimulationApp {
     private static final TrajectoryAlgorithm ALGORITHM = new Beeman();
-    private static final double TIME_STEP = Math.pow(10, -14);
+    private static final double TIME_STEP = Math.pow(10, -15);
     private static final double MAX_TIME = 10;
-
+    private static final int FRAME_RATE = 50;
     private static final String DEFAULT_OUTPUT_FILENAME = "./data/electric/beeman.txt";
 
     public static void main(String[] args) {
@@ -26,13 +26,17 @@ public class SimulationApp {
 
         StringBuilder str = new StringBuilder();
         double time = 0;
+        double frame = 0;
         for (Particle particleState : trajectory){
-            str
-                    .append(time).append(' ')
-                    .append(particleState.getPosition().getX()).append(' ')
-                    .append(particleState.getPosition().getY()).append(' ')
-                    .append(particleState.getVelocity().getVelocityX()).append(' ')
-                    .append(particleState.getVelocity().getVelocityY()).append('\n');
+            if(frame % FRAME_RATE == 0) {
+                str
+                        .append(time).append(' ')
+                        .append(particleState.getPosition().getX()).append(' ')
+                        .append(particleState.getPosition().getY()).append(' ')
+                        .append(particleState.getVelocity().getVelocityX()).append(' ')
+                        .append(particleState.getVelocity().getVelocityY()).append('\n');
+            }
+            frame++;
             time += TIME_STEP;
         }
 
