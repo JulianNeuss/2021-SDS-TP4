@@ -1,28 +1,26 @@
 package ar.edu.itba.particle;
 
+import ar.edu.itba.systems.Force;
+
 import java.util.Objects;
 
-public class Particle implements Comparable<Particle>{
-    private final int id;
+public class Particle{
     private final double mass;
     private Position position;
     private Velocity velocity;
+    private final double electricCharge;
 
     public Particle(Particle particle){
-        id = particle.id;
         mass = particle.mass;
         position = new Position(particle.position.getX(), particle.position.getY());
         velocity = new Velocity(particle.velocity.getVelocityX(), particle.velocity.getVelocityY());
+        electricCharge = particle.electricCharge;
     }
-    public Particle(int id, double mass, Position position, Velocity velocity) {
-        this.id = id;
+    public Particle(double mass, Position position, Velocity velocity, double electricCharge) {
         this.mass = mass;
         this.position = position;
         this.velocity = velocity;
-    }
-
-    public int getId() {
-        return id;
+        this.electricCharge = electricCharge;
     }
 
     public double getMass() {
@@ -50,28 +48,14 @@ public class Particle implements Comparable<Particle>{
         velocity.setVelocityY(velocityY);
     }
 
-    public String toFileString(){
-        return String.valueOf(id) + ' ' +
-                getPosition().getX() + ' ' + getPosition().getY() +
-                ' ' + velocity.getVelocityX() + ' ' + velocity.getVelocityY() +
-                ' ' + getMass() + '\n';
+    public Force getVersor(Particle particle){
+        double deltaX = particle.position.getX() - position.getX();
+        double deltaY = particle.position.getY() - position.getY();
+        double magnitude = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
+        return new Force(deltaX/magnitude, deltaY/magnitude);
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Particle particle = (Particle) o;
-        return id == particle.id;
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(id);
-    }
-
-    @Override
-    public int compareTo(Particle o) {
-        return Integer.compare(id, o.id);
+    public double getElectricCharge() {
+        return electricCharge;
     }
 }

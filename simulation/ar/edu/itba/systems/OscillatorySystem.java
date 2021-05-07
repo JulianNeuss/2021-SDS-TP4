@@ -12,15 +12,14 @@ import java.util.List;
 public class OscillatorySystem implements System, ForceCalculator{
     private static final double GAMMA = 100;
     private static final double K = 10_000;
-    private static final int PARTICLE_ID = 0;
     private static final double MASS = 70;
     private static final Position INITIAL_POSITION = new Position(1,0);
     private static final Velocity INITIAL_VELOCITY = new Velocity(-GAMMA/(2*MASS), 0);
 
     @Override
     public List<Particle> simulate(TrajectoryAlgorithm algorithm, double timeStep, double maxTime) {
-        Particle previousParticle = new Particle(PARTICLE_ID, MASS, null, null);
-        Particle particle = new Particle(PARTICLE_ID, MASS, INITIAL_POSITION, INITIAL_VELOCITY);
+        Particle previousParticle = new Particle(MASS, null, null, 0);
+        Particle particle = new Particle(MASS, INITIAL_POSITION, INITIAL_VELOCITY, 0);
         List<Particle> particleStates = new LinkedList<>();
         particleStates.add(particle);
         for (double time = 0; time < maxTime; time += timeStep) {
