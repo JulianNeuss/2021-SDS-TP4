@@ -18,7 +18,7 @@ public class SimulationApp {
     private static final double TIME_STEP = 0.01;
     private static final double MAX_TIME = 10;
 
-    private static final String DEFAULT_OUTPUT_FILENAME = "./data/output.txt";
+    private static final String DEFAULT_OUTPUT_FILENAME = "./data/oscillatory/gear.txt";
 
     public static void main(String[] args) {
         System system = new OscillatorySystem();
