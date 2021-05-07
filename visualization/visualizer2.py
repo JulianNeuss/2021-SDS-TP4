@@ -8,9 +8,9 @@ L = 16
 algorithm_used = 1
 
 if algorithm_used == 1:
-    f = open("../data/electric_beeman.txt") 
+    f = open("../data/electric/beeman.txt")
 else:
-    f = open("../data/electric_verlet.txt")
+    f = open("../data/electric/verlet.txt")
 
 class Snap:
     def __init__(self,t = 0,x = 0,y = 0,vx = 0,vy = 0):

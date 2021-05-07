@@ -14,14 +14,14 @@ import java.nio.file.Paths;
 import java.util.List;
 
 public class SimulationApp {
-    private static final TrajectoryAlgorithm ALGORITHM = new GearPredictorCorrector();
-    private static final double TIME_STEP = 0.01;
+    private static final TrajectoryAlgorithm ALGORITHM = new Beeman();
+    private static final double TIME_STEP = Math.pow(10, -14);
     private static final double MAX_TIME = 10;
 
-    private static final String DEFAULT_OUTPUT_FILENAME = "./data/oscillatory/gear.txt";
+    private static final String DEFAULT_OUTPUT_FILENAME = "./data/electric/beeman.txt";
 
     public static void main(String[] args) {
-        System system = new OscillatorySystem();
+        System system = new ElectricSystem();
         List<Particle> trajectory = system.simulate(ALGORITHM, TIME_STEP, MAX_TIME);
 
         StringBuilder str = new StringBuilder();

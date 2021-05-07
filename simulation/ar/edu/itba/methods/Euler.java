@@ -15,6 +15,6 @@ public class Euler {
         double x = particle.getPosition().getX() - timeStep * velocityX - timeStep * timeStep * force.getX()/ (2 * particle.getMass());
         double y = particle.getPosition().getY() - timeStep * velocityY - timeStep * timeStep * force.getY()/ (2 * particle.getMass());
 
-        return new Particle(particle.getId(), particle.getMass(), new Position(x, y), new Velocity(x, y));
+        return new Particle(particle.getMass(), new Position(x, y), new Velocity(velocityX, velocityY), particle.getElectricCharge());
     }
 }

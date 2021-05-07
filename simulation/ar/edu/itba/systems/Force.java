@@ -3,8 +3,8 @@ package ar.edu.itba.systems;
 import java.util.Objects;
 
 public class Force {
-    private final double x;
-    private final double y;
+    private double x;
+    private double y;
 
     public Force(double x, double y) {
         this.x = x;
@@ -31,6 +31,15 @@ public class Force {
         if (o == null || getClass() != o.getClass()) return false;
         Force position = (Force) o;
         return Double.compare(position.x, x) == 0 && Double.compare(position.y, y) == 0;
+    }
+
+    public void sum(Force force){
+        this.x += force.x;
+        this.y += force.y;
+    }
+
+    public static Force fromVersorAndModule(Force versor, double module){
+        return new Force(module * versor.x, module * versor.y);
     }
 
     @Override

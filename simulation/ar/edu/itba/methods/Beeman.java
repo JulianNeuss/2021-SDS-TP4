@@ -28,8 +28,8 @@ public class Beeman implements TrajectoryAlgorithm{
         double predictedVelocityY = particle.getVelocity().getVelocityY() + (3 * currentAccelerationY
                 - previousAccelerationY) * timeStep / 2;
 
-        Particle nextPredictedParticle = new Particle(particle.getId(), particle.getMass(), new Position(x, y),
-                new Velocity(predictedVelocityX, predictedVelocityY));
+        Particle nextPredictedParticle = new Particle(particle.getMass(), new Position(x, y),
+                new Velocity(predictedVelocityX, predictedVelocityY), particle.getElectricCharge());
 
         Force nextForce = forceCalculator.getForce(nextPredictedParticle);
         double nextAccelerationX = nextForce.getX() / particle.getMass();
@@ -40,6 +40,6 @@ public class Beeman implements TrajectoryAlgorithm{
         double correctVelocityY = particle.getVelocity().getVelocityY() +
                 (nextAccelerationY/3 + 5*currentAccelerationY/6 - previousAccelerationY/6) * timeStep;
 
-        return new Particle(particle.getId(), particle.getMass(), new Position(x, y), new Velocity(correctVelocityX, correctVelocityY));
+        return new Particle(particle.getMass(), new Position(x, y), new Velocity(correctVelocityX, correctVelocityY), particle.getElectricCharge());
     }
 }

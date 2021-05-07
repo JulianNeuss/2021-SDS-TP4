@@ -23,6 +23,6 @@ public class Verlet implements TrajectoryAlgorithm {
         double velocityX = (nextPosition.getX() - previousPosition.getX())/(2*timeStep);
         double velocityY = (nextPosition.getY() - previousPosition.getY())/(2*timeStep);
         Velocity nextVelocity = new Velocity(velocityX, velocityY);
-        return new Particle(particle.getId(), particle.getMass(), nextPosition, nextVelocity);
+        return new Particle(particle.getMass(), nextPosition, nextVelocity, particle.getElectricCharge());
     }
 }

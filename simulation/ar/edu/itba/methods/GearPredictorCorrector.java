@@ -32,13 +32,13 @@ public class GearPredictorCorrector implements TrajectoryAlgorithm{
             velocityY += coefficientsY[i + 1] * Math.pow(timeStep, i) / factorial(i);
         }
 
-        return new Particle(particle.getId(), particle.getMass(), new Position(x, y), new Velocity(velocityX, velocityY));
+        return new Particle(particle.getMass(), new Position(x, y), new Velocity(velocityX, velocityY), 0);
     }
 
     // Full algorithm
     private List<double[]> gearAlgorithmPolynomialCoefficients(Particle particle, ForceCalculator forceCalculator, double timeStep){
         List<Position> predictions = predictionStep(forceCalculator.getRDerivatives(ORDER, particle), timeStep);
-        Particle predictedParticle = new Particle(particle.getId(), particle.getMass(), predictions.get(0), new Velocity(predictions.get(1).getX(), predictions.get(1).getY()));
+        Particle predictedParticle = new Particle(particle.getMass(), predictions.get(0), new Velocity(predictions.get(1).getX(), predictions.get(1).getY()), 0);
         Force deltaR2Force = evaluationStep(predictions, predictedParticle, forceCalculator, timeStep);
         return correctionStep(deltaR2Force, particle.getMass(), predictions, timeStep);
     }
