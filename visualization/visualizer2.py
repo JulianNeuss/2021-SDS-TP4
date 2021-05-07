@@ -72,11 +72,8 @@ ani = FuncAnimation(
 plt.gcf().set_size_inches(12,12)
 
 if SAVE_VIDEO == True:
-    try:
+    if not os.path.exists('animation'):
         os.makedirs('animation')
-    except OSError as e:
-        if e.errno != errno.EEXIST:
-            raise
     ani.save("animation/visualizer2_anime.avi",progress_callback=progress_callback)
     ani.save("animation/visualizer2_anime.gif",progress_callback=progress_callback)
 if SHOW_PLOT == True:
