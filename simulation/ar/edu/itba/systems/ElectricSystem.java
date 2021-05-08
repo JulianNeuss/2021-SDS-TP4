@@ -26,15 +26,15 @@ public class ElectricSystem implements System, ForceCalculator{
 
     @Override
     public List<Particle> simulate(TrajectoryAlgorithm algorithm, double timeStep, double maxTime) {
-        return simulate(algorithm, timeStep, maxTime, INITIAL_VELOCITY);
+        return simulate(algorithm, timeStep, maxTime, INITIAL_POSITION, INITIAL_VELOCITY);
     }
 
-    public List<Particle> simulate(TrajectoryAlgorithm algorithm, double timeStep, double maxTime, Velocity initialVelocity) {
+    public List<Particle> simulate(TrajectoryAlgorithm algorithm, double timeStep, double maxTime,  Position initialPosition, Velocity initialVelocity) {
         if(algorithm.getClass() == GearPredictorCorrector.class){
             throw new IllegalArgumentException("The electric system does not support Gear method");
         }
         Particle previousParticle = new Particle(MASS, null, null, CHARGE);
-        Particle particle = new Particle(MASS, INITIAL_POSITION, initialVelocity, CHARGE);
+        Particle particle = new Particle(MASS, initialPosition, initialVelocity, CHARGE);
         List<Particle> particleStates = new LinkedList<>();
         particleStates.add(particle);
         for (double time = 0; !endCondition(particle) && time < maxTime; time += timeStep) {
@@ -69,7 +69,6 @@ public class ElectricSystem implements System, ForceCalculator{
                 totalForce.sum(getForceInParticle1(particle1, particle2));
             }
         }
-        java.lang.System.out.println("Force: (" +totalForce.getX() + ", " + totalForce.getY() + ")" );
         return totalForce;
     }
 

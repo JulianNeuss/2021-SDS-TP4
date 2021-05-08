@@ -2,6 +2,7 @@ package ar.edu.itba.simulation.experiment.electric;
 
 import ar.edu.itba.methods.Beeman;
 import ar.edu.itba.particle.Particle;
+import ar.edu.itba.particle.Position;
 import ar.edu.itba.particle.Velocity;
 import ar.edu.itba.systems.ElectricSystem;
 
@@ -24,13 +25,17 @@ public class TrajectoryVaryingSpeedExperiment {
     private static final double TIME_STEP = Math.pow(10, -14);
     private static final double MAX_TIME = 10;
     private static final String DEFAULT_OUTPUT_FILENAME = "./data/electric/trajectoryVaryingSpeed.txt";
+    private static final int LENGTH = 16;
+    private static final double DISTANCE_BETWEEN_PARTICLES = Math.pow(10, -8);
+    private static final double MIN_POSITION = (LENGTH-1)/2.0 * DISTANCE_BETWEEN_PARTICLES - DISTANCE_BETWEEN_PARTICLES;
+    private static final double MAX_POSITION = (LENGTH-1)/2.0 * DISTANCE_BETWEEN_PARTICLES + DISTANCE_BETWEEN_PARTICLES;
 
     public static void main(String[] args) {
         ElectricSystem system = new ElectricSystem();
         List<List<Particle>> trajectories = new ArrayList<>();
         for (int attempt = 0; attempt < SPEEDS_QTY; attempt++) {
             double speed = MIN_SPEED + attempt * (MAX_SPEED - MIN_SPEED) / SPEEDS_QTY;
-            List<Particle> trajectory = system.simulate(new Beeman(), TIME_STEP, MAX_TIME, new Velocity(speed, 0));
+            List<Particle> trajectory = system.simulate(new Beeman(), TIME_STEP, MAX_TIME, randomPositionBetween(MIN_POSITION, MAX_POSITION), new Velocity(speed, 0));
             trajectories.add(trajectory);
         }
 
@@ -69,5 +74,10 @@ public class TrajectoryVaryingSpeedExperiment {
             e.printStackTrace();
             throw new RuntimeException("File " + DEFAULT_OUTPUT_FILENAME + " not found");
         }
+    }
+
+    private static Position randomPositionBetween(double minPosition, double maxPosition) {
+        double y = Math.random() * (maxPosition - minPosition) + maxPosition;
+        return new Position(0, y);
     }
 }

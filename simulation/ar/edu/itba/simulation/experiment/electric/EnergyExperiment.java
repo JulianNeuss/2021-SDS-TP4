@@ -78,9 +78,4 @@ public class EnergyExperiment {
         }
 
     }
-
-    private static double quarticError(Particle realState, Particle approximatedState) {
-        double error = realState.getPosition().getX() - approximatedState.getPosition().getX();
-        return error * error;
-    }
 }
