@@ -1,9 +1,7 @@
 package ar.edu.itba.simulation;
 
 import ar.edu.itba.methods.Beeman;
-import ar.edu.itba.methods.GearPredictorCorrector;
 import ar.edu.itba.methods.TrajectoryAlgorithm;
-import ar.edu.itba.methods.Verlet;
 import ar.edu.itba.particle.Particle;
 import ar.edu.itba.systems.ElectricSystem;
 import ar.edu.itba.systems.System;

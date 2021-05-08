@@ -69,6 +69,16 @@ public class ElectricSystem implements System, ForceCalculator{
         return totalForce;
     }
 
+    public double getPotentialEnergy(Particle particle1) {
+        double energy = 0;
+        for (List<Particle> row : particles){
+            for (Particle particle2 : row){
+                energy += K * particle1.getElectricCharge() * particle2.getElectricCharge() / particle1.getPosition().getDistanceTo(particle2.getPosition());
+            }
+        }
+        return energy;
+    }
+
     @Override
     public List<Position> getRDerivatives(int order, Particle particle) {
         return null; // fiaca derivar, muy dificil

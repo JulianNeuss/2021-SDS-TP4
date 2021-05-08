@@ -25,6 +25,10 @@ public class Velocity {
         this.velocityY = velocityY;
     }
 
+    public double getSpeed(){
+        return Math.sqrt(velocityX * velocityX + velocityY * velocityY);
+    }
+
     @Override
     public String toString() {
         return "(" + velocityX + ", " + velocityY + ")";
