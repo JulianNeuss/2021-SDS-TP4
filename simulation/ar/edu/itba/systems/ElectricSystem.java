@@ -26,11 +26,15 @@ public class ElectricSystem implements System, ForceCalculator{
 
     @Override
     public List<Particle> simulate(TrajectoryAlgorithm algorithm, double timeStep, double maxTime) {
+        return simulate(algorithm, timeStep, maxTime, INITIAL_VELOCITY);
+    }
+
+    public List<Particle> simulate(TrajectoryAlgorithm algorithm, double timeStep, double maxTime, Velocity initialVelocity) {
         if(algorithm.getClass() == GearPredictorCorrector.class){
             throw new IllegalArgumentException("The electric system does not support Gear method");
         }
         Particle previousParticle = new Particle(MASS, null, null, CHARGE);
-        Particle particle = new Particle(MASS, INITIAL_POSITION, INITIAL_VELOCITY, CHARGE);
+        Particle particle = new Particle(MASS, INITIAL_POSITION, initialVelocity, CHARGE);
         List<Particle> particleStates = new LinkedList<>();
         particleStates.add(particle);
         for (double time = 0; !endCondition(particle) && time < maxTime; time += timeStep) {

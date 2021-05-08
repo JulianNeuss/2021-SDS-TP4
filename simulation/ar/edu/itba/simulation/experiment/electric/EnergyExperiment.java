@@ -3,7 +3,6 @@ package ar.edu.itba.simulation.experiment.electric;
 import ar.edu.itba.methods.Beeman;
 import ar.edu.itba.particle.Particle;
 import ar.edu.itba.systems.ElectricSystem;
-import ar.edu.itba.systems.OscillatorySystem;
 
 import java.io.BufferedWriter;
 import java.io.File;
