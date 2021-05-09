@@ -22,4 +22,5 @@ plt.ylabel("trayectorias",fontsize=15)
 plt.scatter(vels,trajectories)
 plt.plot(vels,trajectories)
 
+f.close()
 plt.show()

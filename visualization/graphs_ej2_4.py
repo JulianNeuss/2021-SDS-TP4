@@ -58,9 +58,5 @@ plt.scatter(x,absorbed,label="absorbed")
 
 ax.legend(fontsize=20)
 
+f.close()
 plt.show()
-
-    
-    
-    
-    
