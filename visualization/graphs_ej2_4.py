@@ -19,12 +19,13 @@ lines = list(filter(lambda x: x.strip() != '', lines))
 
 results = []
 
+max_y = 0
 for i in range(int(len(lines)/2)):
     v = float(lines[2*i])
     line = list(map(lambda x: x.split(":"),lines[2*i + 1].strip().split(" ")))
     d = {}
     for field in line:
-        d[field[0]] = field[1]
+        d[field[0]] = float(field[1])
     results.append(Result(v,d["UP"], d["DOWN"], d["LEFT"], d["RIGHT"], d["ABSORBED"]))
 
 x = []
@@ -46,15 +47,15 @@ ax = plt.gca()
 ax.figure.set_size_inches(16,12)
 
 plt.scatter(x,up,label="up")
-# plt.plot(x,up,label="up")
+plt.plot(x,up,label="up")
 plt.scatter(x,down,label="down")
-# plt.plot(x,down,label="down")
+plt.plot(x,down,label="down")
 plt.scatter(x,left,label="left")
-# plt.plot(x,left,label="left")
+plt.plot(x,left,label="left")
 plt.scatter(x,right,label="right")
-# plt.plot(x,right,label="right")
+plt.plot(x,right,label="right")
 plt.scatter(x,absorbed,label="absorbed")
-# plt.plot(x,absorbed,label="absorbed")
+plt.plot(x,absorbed,label="absorbed")
 
 ax.legend(fontsize=20)
 
