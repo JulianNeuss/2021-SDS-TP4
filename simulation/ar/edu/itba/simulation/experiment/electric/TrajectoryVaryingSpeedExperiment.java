@@ -11,16 +11,13 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class TrajectoryVaryingSpeedExperiment {
     private static final double MIN_SPEED = Math.pow(10, 4);
     private static final double MAX_SPEED = Math.pow(10, 5);
-    private static final int SPEEDS_QTY = 100;
+    private static final int SPEEDS_QTY = 50;
 
     private static final double TIME_STEP = Math.pow(10, -14);
     private static final double MAX_TIME = 10;
@@ -29,31 +26,39 @@ public class TrajectoryVaryingSpeedExperiment {
     private static final double DISTANCE_BETWEEN_PARTICLES = Math.pow(10, -8);
     private static final double MIN_POSITION = (LENGTH-1)/2.0 * DISTANCE_BETWEEN_PARTICLES - DISTANCE_BETWEEN_PARTICLES;
     private static final double MAX_POSITION = (LENGTH-1)/2.0 * DISTANCE_BETWEEN_PARTICLES + DISTANCE_BETWEEN_PARTICLES;
+    private static final int REALIZATIONS = 100;
 
     public static void main(String[] args) {
         ElectricSystem system = new ElectricSystem();
-        List<List<Particle>> trajectories = new ArrayList<>();
+        List<List<List<Particle>>> trajectories = new ArrayList<>();
         for (int attempt = 0; attempt < SPEEDS_QTY; attempt++) {
-            double speed = MIN_SPEED + attempt * (MAX_SPEED - MIN_SPEED) / SPEEDS_QTY;
-            List<Particle> trajectory = system.simulate(new Beeman(), TIME_STEP, MAX_TIME, randomPositionBetween(MIN_POSITION, MAX_POSITION), new Velocity(speed, 0));
-            trajectories.add(trajectory);
+            trajectories.add(new LinkedList<>());
+            for(int realization=0; realization < REALIZATIONS; realization++) {
+                double speed = MIN_SPEED + attempt * (MAX_SPEED - MIN_SPEED) / SPEEDS_QTY;
+                List<Particle> trajectory = system.simulate(new Beeman(), TIME_STEP, MAX_TIME, randomPositionBetween(MIN_POSITION, MAX_POSITION), new Velocity(speed, 0));
+                trajectories.get(attempt).add(trajectory);
+            }
         }
 
-        Map<Double, Double> speedToDistanceMap = new HashMap<>();
+        Map<Double, Double[]> speedToDistanceMap = new HashMap<>();
         for (int attempt = 0; attempt < SPEEDS_QTY; attempt++) {
             double speed = MIN_SPEED + attempt * (MAX_SPEED - MIN_SPEED) / SPEEDS_QTY;
-            double distance = 0;
-            Particle previousState = trajectories.get(attempt).get(0);
-            for (Particle state : trajectories.get(attempt)){
-                distance += previousState.getPosition().getDistanceTo(state.getPosition());
-                previousState = state;
+            List<Double> distances = new LinkedList<>();
+            for(int realization=0; realization < REALIZATIONS; realization++) {
+                double distance = 0;
+                Particle previousState = trajectories.get(attempt).get(realization).get(0);
+                for (Particle state : trajectories.get(attempt).get(realization)) {
+                    distance += previousState.getPosition().getDistanceTo(state.getPosition());
+                    previousState = state;
+                }
+                distances.add(distance);
             }
-            speedToDistanceMap.put(speed, distance);
+            speedToDistanceMap.put(speed, new Double[]{average(distances), standardDeviation(distances)});
         }
 
         StringBuilder str = new StringBuilder();
         for (Double speed : speedToDistanceMap.keySet().stream().sorted(Double::compare).collect(Collectors.toList())){
-            str.append(speed).append(':').append(speedToDistanceMap.get(speed)).append('\n');
+            str.append(speed).append(':').append(speedToDistanceMap.get(speed)[0]).append(':').append(speedToDistanceMap.get(speed)[1]).append('\n');
         }
 
         // check file
@@ -79,5 +84,29 @@ public class TrajectoryVaryingSpeedExperiment {
     private static Position randomPositionBetween(double minPosition, double maxPosition) {
         double y = Math.random() * (maxPosition - minPosition) + maxPosition;
         return new Position(0, y);
+    }
+
+    public static double average(List<Double> results){
+        double aliveSum = 0;
+        for (Double result : results){
+            aliveSum += result;
+        }
+
+        return aliveSum/results.size();
+    }
+
+    public static double standardDeviation(List<Double> results){
+        double aliveSum = 0;
+        double aliveStandardDeviationAccum = 0;
+        for (Double result : results){
+            aliveSum += result;
+        }
+
+        double aliveMean = aliveSum/results.size();
+        for (Double result : results){
+            aliveStandardDeviationAccum += Math.pow(result - aliveMean, 2);
+        }
+
+        return Math.sqrt(aliveStandardDeviationAccum/results.size());
     }
 }

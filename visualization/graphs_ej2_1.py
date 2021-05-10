@@ -76,6 +76,6 @@ if SAVE_VIDEO == True:
     if not os.path.exists('animation'):
         os.makedirs('animation')
     ani.save("animation/video.avi",progress_callback=progress_callback)
-    # ani.save("animation/animation.gif",progress_callback=progress_callback)
+    ani.save("animation/animation.gif",progress_callback=progress_callback)
 if SHOW_PLOT == True:
     plt.show()

@@ -19,7 +19,7 @@ public class VaryingTimeStepExperiment {
     private static final TrajectoryAlgorithm[] ALGORITHMS = {new Verlet(), new Beeman(), new GearPredictorCorrector()};
     private static final double MIN_TIME_STEP = Math.pow(10, -5);
     private static final double MAX_TIME_STEP = Math.pow(10, -2);
-    private static final double TIME_STEP_QTY = 10;
+    private static final double TIME_STEP_QTY = 50;
     private static final double MAX_TIME = 10;
     private static final double FRAMES = 1000;
     private static final String DEFAULT_OUTPUT_FILENAME = "./data/oscillatory/varyingTimeStep.txt";

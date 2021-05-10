@@ -13,18 +13,20 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 public class EnergyExperiment {
-    private static final double MIN_TIME_STEP = Math.pow(10, -15);
-    private static final double MAX_TIME_STEP = Math.pow(10, -12);
-    private static final double TIME_STEP_QTY = 1000;
+    private static final double MIN_EXP = -16;
+    private static final double MAX_EXP = -12;
+    private static final double MIN_TIME_STEP = Math.pow(10, MIN_EXP);
+    private static final double MAX_TIME_STEP = Math.pow(10, MAX_EXP);
+    private static final double TIME_STEP_QTY = 4;
     private static final double MAX_TIME = 10;
-    private static final double FRAMES = 500;
+    private static final double FRAMES = 10000000;
     private static final String DEFAULT_OUTPUT_FILENAME = "./data/electric/energyVaryingTimeStep.txt";
 
     public static void main(String[] args) {
         ElectricSystem system = new ElectricSystem();
         List<List<Particle>> trajectories = new ArrayList<>();
         for (int attempt = 0; attempt < TIME_STEP_QTY; attempt++) {
-            double timeStep = MIN_TIME_STEP + attempt * (MAX_TIME_STEP - MIN_TIME_STEP)/TIME_STEP_QTY;
+            double timeStep = Math.pow(10, MIN_EXP + attempt * (MAX_EXP - MIN_EXP)/TIME_STEP_QTY);
             List<Particle> trajectory = system.simulate(new Beeman(), timeStep, MAX_TIME);
             trajectories.add(trajectory);
         }
@@ -38,7 +40,7 @@ public class EnergyExperiment {
 
         Map<Double, List<Double>> timeStepToErrorsMap = new HashMap<>();
         for (int attempt = 0; attempt < TIME_STEP_QTY; attempt++) {
-            double timeStep = MIN_TIME_STEP + attempt * (MAX_TIME_STEP - MIN_TIME_STEP)/TIME_STEP_QTY;
+            double timeStep = Math.pow(10, MIN_EXP + attempt * (MAX_EXP - MIN_EXP)/TIME_STEP_QTY);
             timeStepToErrorsMap.put(timeStep, new LinkedList<>());
             for(int stepNumber = 0; stepNumber < trajectories.get(attempt).size(); stepNumber++){
                 if(stepNumber % Math.ceil(trajectories.get(attempt).size()/FRAMES) == 0) {

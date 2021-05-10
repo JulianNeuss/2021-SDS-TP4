@@ -6,7 +6,7 @@ BEEMAN_PATH = os.path.join("../data/oscillatory", "beeman.txt")
 GEAR_PATH = os.path.join("../data/oscillatory", "gear.txt")
 VERLET_PATH = os.path.join("../data/oscillatory", "verlet.txt")
 
-methods = ["beeman", "gear", "verlet"]
+methods = ["Beeman", "Gear Predictor-Corrector", "Verlet"]
 
 
 def parse(path):
@@ -46,12 +46,12 @@ error_verlet = error(oscillatory_solution(k, gamma, m, times_verlet), verlet_x)
 errors = [error_beeman, error_gear, error_verlet]
 
 for (i, error), time in zip(enumerate(errors), times):
-    print("Error " + methods[i] + ": " + str(error))
+    print("Error cuadrático medio " + methods[i] + ": " + str(error))
 
 for (i, approximation), time in zip(enumerate(approximations), times):
-    plt.plot(time, approximation, label=methods[i])
-
-plt.title("Posicion")
-plt.plot(times[0], oscillatory_solution(k, gamma, m, times[0]), label="analytical")
-plt.legend()
+    plt.plot(time, approximation, label=methods[i], linewidth=2)
+plt.plot(times[0], oscillatory_solution(k, gamma, m, times[0]), label="Analítico", linestyle="-.", linewidth=2)
+plt.xlabel('Tiempo (s)', fontsize=18)
+plt.ylabel('X (m)', fontsize=16)
+plt.legend(fontsize=16)
 plt.show()
