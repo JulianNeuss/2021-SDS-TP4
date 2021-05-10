@@ -18,7 +18,7 @@ import java.util.List;
 
 public class SimulationOscillatoryApp {
     private static final TrajectoryAlgorithm[] ALGORITHMS = {new Verlet(), new Beeman(), new GearPredictorCorrector()};
-    private static final double TIME_STEP = Math.pow(10, -15);
+    private static final double TIME_STEP = Math.pow(10, -4);
     private static final double MAX_TIME = 10;
     private static final int FRAME_RATE = 50;
     private static final String[] FILENAMES = {"./data/oscillatory/verlet.txt", "./data/oscillatory/beeman.txt", "./data/oscillatory/gear.txt"};
