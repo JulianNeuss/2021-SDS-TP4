@@ -32,8 +32,8 @@ while line:
 ax = plt.gca()
 ax.set_yscale('log')
 ax.figure.set_size_inches(15,12)
-plt.xlabel('dt', fontsize=18)
-plt.ylabel('log(ecm)', fontsize=16)
+plt.xlabel('Paso de integración (s)', fontsize=18)
+plt.ylabel('Error cuadrático medio', fontsize=16)
 
 for ar in al_results:
     x = []

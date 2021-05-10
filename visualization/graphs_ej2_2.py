@@ -22,9 +22,9 @@ for i in range(int(len(lines)/2)):
 
 ax = plt.gca()
 ax.figure.set_size_inches(16,12)
-ax.set_xlabel("tiempo",fontsize=15)
-ax.set_ylabel("energia",fontsize=15)
-# ax.legend(fontsize=12)
+ax.set_xlabel("Tiempo (s)",fontsize=15)
+ax.set_ylabel("Energía mecánica (J)",fontsize=15)
+ax.legend(fontsize=12)
 
 plt.show()
 f.close()

@@ -44,20 +44,12 @@ for r in results:
     absorbed.append(r.absorbed)
 
 ax = plt.gca()
-ax.figure.set_size_inches(16,12)
-
-plt.scatter(x,up,label="up")
-plt.plot(x,up,label="up")
-plt.scatter(x,down,label="down")
-plt.plot(x,down,label="down")
-plt.scatter(x,left,label="left")
-plt.plot(x,left,label="left")
-plt.scatter(x,right,label="right")
-plt.plot(x,right,label="right")
-plt.scatter(x,absorbed,label="absorbed")
-plt.plot(x,absorbed,label="absorbed")
-
-ax.legend(fontsize=20)
+plt.stackplot(x,absorbed, down, left, up, right, labels=['Absorbido','Abajo','Izquierda', 'Arriba', 'Derecha'], colors=['orangered', 'gold', 'palegreen', 'darkturquoise','royalblue'])
+box = ax.get_position()
+ax.set_position([box.x0, box.y0, box.width * 0.8, box.height])
+ax.legend(loc='center left', bbox_to_anchor=(1, 0.5), fontsize=15)
+plt.xlabel("Velocidad inicial (m/s)",fontsize=15)
+plt.ylabel("Proporción de particulas",fontsize=15)
 
 f.close()
 plt.show()

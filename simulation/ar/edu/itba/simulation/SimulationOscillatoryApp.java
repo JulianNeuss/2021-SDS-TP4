@@ -1,7 +1,9 @@
 package ar.edu.itba.simulation;
 
 import ar.edu.itba.methods.Beeman;
+import ar.edu.itba.methods.GearPredictorCorrector;
 import ar.edu.itba.methods.TrajectoryAlgorithm;
+import ar.edu.itba.methods.Verlet;
 import ar.edu.itba.particle.Particle;
 import ar.edu.itba.systems.ElectricSystem;
 import ar.edu.itba.systems.System;
@@ -13,16 +15,22 @@ import java.io.IOException;
 import java.nio.file.Paths;
 import java.util.List;
 
-public class SimulationApp {
-    private static final TrajectoryAlgorithm ALGORITHM = new Beeman();
+public class SimulationOscillatoryApp {
+    private static final TrajectoryAlgorithm[] ALGORITHMS = {new Verlet(), new Beeman(), new GearPredictorCorrector()};
     private static final double TIME_STEP = Math.pow(10, -15);
     private static final double MAX_TIME = 10;
     private static final int FRAME_RATE = 50;
-    private static final String DEFAULT_OUTPUT_FILENAME = "./data/electric/beeman.txt";
+    private static final String[] FILENAMES = {"./data/oscillatory/verlet.txt", "./data/oscillatory/beeman.txt", "./data/oscillatory/gear.txt"};
 
     public static void main(String[] args) {
+        for (int algorithmNumber = 0; algorithmNumber < ALGORITHMS.length; algorithmNumber++) {
+            simulate(ALGORITHMS[algorithmNumber], FILENAMES[algorithmNumber]);
+        }
+    }
+
+    public static void simulate(TrajectoryAlgorithm algorithm, String outputFilename) {
         System system = new ElectricSystem();
-        List<Particle> trajectory = system.simulate(ALGORITHM, TIME_STEP, MAX_TIME);
+        List<Particle> trajectory = system.simulate(algorithm, TIME_STEP, MAX_TIME);
 
         StringBuilder str = new StringBuilder();
         double time = 0;
@@ -41,7 +49,7 @@ public class SimulationApp {
         }
 
         // check file
-        File outputFile = new File(Paths.get(DEFAULT_OUTPUT_FILENAME).toAbsolutePath().toString());
+        File outputFile = new File(Paths.get(outputFilename).toAbsolutePath().toString());
         if(!outputFile.getParentFile().exists()){
             if(!outputFile.getParentFile().mkdirs()){
                 java.lang.System.err.println("Output's folder does not exist and could not be created");
@@ -50,12 +58,12 @@ public class SimulationApp {
         }
 
         try {
-            BufferedWriter writer = new BufferedWriter(new FileWriter(Paths.get(DEFAULT_OUTPUT_FILENAME).toAbsolutePath().toString(), false));
+            BufferedWriter writer = new BufferedWriter(new FileWriter(Paths.get(outputFilename).toAbsolutePath().toString(), false));
             writer.write(str.toString());
             writer.close();
         } catch (IOException e) {
             e.printStackTrace();
-            throw new RuntimeException("File " + DEFAULT_OUTPUT_FILENAME + " not found");
+            throw new RuntimeException("File " + outputFilename + " not found");
         }
 
     }

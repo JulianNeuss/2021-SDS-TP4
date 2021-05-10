@@ -16,8 +16,8 @@ while line and line != "":
     line = f.readline().strip()
 
 plt.gcf().set_size_inches(16, 12)
-plt.xlabel("velocidades",fontsize=15)
-plt.ylabel("trayectorias",fontsize=15)
+plt.xlabel("Velocidad inicial (m/s)",fontsize=15)
+plt.ylabel("Longitud de la trayectoria (m)",fontsize=15)
 
 plt.scatter(vels,trajectories)
 plt.plot(vels,trajectories)
