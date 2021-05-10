@@ -6,6 +6,7 @@ import ar.edu.itba.methods.TrajectoryAlgorithm;
 import ar.edu.itba.methods.Verlet;
 import ar.edu.itba.particle.Particle;
 import ar.edu.itba.systems.ElectricSystem;
+import ar.edu.itba.systems.OscillatorySystem;
 import ar.edu.itba.systems.System;
 
 import java.io.BufferedWriter;
@@ -29,7 +30,7 @@ public class SimulationOscillatoryApp {
     }
 
     public static void simulate(TrajectoryAlgorithm algorithm, String outputFilename) {
-        System system = new ElectricSystem();
+        System system = new OscillatorySystem();
         List<Particle> trajectory = system.simulate(algorithm, TIME_STEP, MAX_TIME);
 
         StringBuilder str = new StringBuilder();
